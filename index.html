@@ -119,6 +119,20 @@
             vertical-align: middle;
         }
 
+        td[contenteditable="true"] {
+            cursor: text;
+        }
+
+        td[contenteditable="true"]:focus {
+            outline: 2px solid #2d8a8a;
+            outline-offset: -2px;
+            background: #fff;
+        }
+
+        td[contenteditable="true"]:hover {
+            background: rgba(45, 138, 138, 0.1);
+        }
+
         .month-cell {
             background: rgba(45, 138, 138, 0.2);
             border-radius: 4px;
@@ -304,7 +318,7 @@
         </div>
 
         <div class="footer">
-            <span class="add-btn">新增</span>
+            <span class="add-btn" onclick="addEmptyRow()">新增</span>
             <div class="row-count">
                 <input type="text" value="1000">
                 <span>列於底部</span>
@@ -378,29 +392,29 @@
                 const hasMonth = row['月份'] && row['月份'].trim();
 
                 html += `<tr>
-                    <td>${hasMonth ? `<span class="month-cell">${row['月份']}</span>` : ''}</td>
-                    <td class="date-cell ${!hasDate ? 'placeholder' : ''}">${hasDate ? row['交易日期'] : 'yyyy/m/d'}</td>
-                    <td>${getHandlerTags(row['經手人'])}</td>
-                    <td>${getTypeTag(row['類型'])}</td>
-                    <td class="amount-cell">${row['港幣金額'] || '<div class="placeholder-bar"></div>'}</td>
-                    <td class="amount-cell">${row['匯率'] || '##'}</td>
-                    <td class="amount-cell">${row['台幣金額'] || 'NT$0'}</td>
-                    <td class="amount-cell">${row['可轉帳額度'] || 'NT$xx'}</td>
-                    <td class="amount-cell">${row['台幣餘額'] || 'NT$xx'}</td>
+                    <td contenteditable="true">${hasMonth ? row['月份'] : ''}</td>
+                    <td contenteditable="true" class="date-cell ${!hasDate ? 'placeholder' : ''}">${hasDate ? row['交易日期'] : ''}</td>
+                    <td contenteditable="true">${row['經手人'] || ''}</td>
+                    <td contenteditable="true">${row['類型'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${row['港幣金額'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${row['匯率'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${row['台幣金額'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${row['可轉帳額度'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${row['台幣餘額'] || ''}</td>
                 </tr>`;
             });
 
             if (isLastRowSummary) {
                 html += `<tr class="summary-row">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="amount-cell">${lastRow['匯率'] || ''}</td>
-                    <td class="amount-cell">${lastRow['台幣金額'] || ''}</td>
-                    <td class="amount-cell">${lastRow['可轉帳額度'] || ''}</td>
-                    <td class="amount-cell">${lastRow['台幣餘額'] || ''}</td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true" class="amount-cell">${lastRow['匯率'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${lastRow['台幣金額'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${lastRow['可轉帳額度'] || ''}</td>
+                    <td contenteditable="true" class="amount-cell">${lastRow['台幣餘額'] || ''}</td>
                 </tr>`;
             }
 
@@ -414,9 +428,33 @@
                     <td colspan="9" class="empty-state">
                         <p>尚未載入資料</p>
                         <button class="import-btn" onclick="document.getElementById('fileInput').click()">匯入 CSV 檔案</button>
+                        <button class="import-btn" onclick="addEmptyRow()" style="margin-left: 8px;">新增一列</button>
                     </td>
                 </tr>
             `;
+        }
+
+        function addEmptyRow() {
+            const tbody = document.getElementById('tableBody');
+            // Clear empty state if present
+            const emptyState = tbody.querySelector('.empty-state');
+            if (emptyState) {
+                tbody.innerHTML = '';
+            }
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td contenteditable="true"></td>
+                <td contenteditable="true" class="date-cell"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true" class="amount-cell"></td>
+                <td contenteditable="true" class="amount-cell"></td>
+                <td contenteditable="true" class="amount-cell"></td>
+                <td contenteditable="true" class="amount-cell"></td>
+                <td contenteditable="true" class="amount-cell"></td>
+            `;
+            tbody.appendChild(newRow);
         }
 
         // Handle file upload
